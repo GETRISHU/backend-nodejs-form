@@ -4,17 +4,30 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); 
+
+
+// ✅ Set CSP headers to allow frontend scripts
+app.use((req, res, next) => {
+    res.setHeader("Content-Security-Policy", 
+        "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:; style-src 'self' 'unsafe-inline'; connect-src *"
+    );
+    next();
+});
 
 app.post('/api/send', async (req, res) => {
     const { name, email, message } = req.body;
 
+    
+
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: process.env.EMAIL_USER,       // your Gmail
-            pass: process.env.EMAIL_PASS        // app password
+            user: process.env.EMAIL_USER ,
+            pass: process.env.EMAIL_PASS
         }
     });
 
